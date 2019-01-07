@@ -1,0 +1,25 @@
+{
+    "radios": [
+        {
+            "id": "radioclassique",
+            "display_name": "Radio Classique",
+            "url": "http://broadcast.infomaniak.net/radioclassique-high.mp3"
+        },
+        {
+            "id": "radioswissclassic",
+            "display_name": "Radio Swiss\rClassic",
+            "url": "http://stream.srg-ssr.ch/m/rsc_fr/mp3_128"
+        },
+                {
+            "id": "francemusiqueeasy",
+            "display_name": "France musique\rClassique Easy",
+            "url": "http://chai5she.lb.vip.cdn.dvmr.fr/francemusiqueeasyclassique-hifi.mp3"
+        },
+                {
+            "id": "francemusiqueplus",
+            "display_name": "France musique\rClassique Plus",
+            "url": "http://chai5she.lb.vip.cdn.dvmr.fr/francemusiqueclassiqueplus-hifi.mp3"
+        }
+
+    ]
+}
