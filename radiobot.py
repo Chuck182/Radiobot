@@ -6,6 +6,7 @@ import RPi.GPIO as GPIO
 import time
 from subprocess import call
 import serial
+from displayManager import DisplayManager
 
 ##############################
 ### GLOBAL VARS
@@ -18,13 +19,10 @@ selected_radio = 0
 number_of_radios = 0
 player = None
 instance = None
-lcd = None
-no_radio_display_text = "Pas de radio"
+displayManager = None
 asked_for_exit = -1
 current_volume = 60
 volume_step = 5
-volume_display_timer = 3
-volume_display_remaining = -1
 
 ##############################
 ### iCUSTOM CLASSES
@@ -60,16 +58,12 @@ def configure_GPIO():
 
 def configure_vlc_player():
     global player, instance
-    instance = vlc.Instance("--no-video --aout=alsa")
+    instance = vlc.Instance("--no-video --aout=alsa --metadata-network-access")
     player = instance.media_player_new()
     player.audio_set_volume(current_volume)
 
 def configure_alsamixer():
-    call(["amixer", "-M", "-q", "set", "PCM", str(current_volume)+"%"])
-
-def set_listener():
-    with Listener(on_press=on_key_pressed) as listener:
-        listener.join()
+    call(["amixer", "-M", "-q", "set", "Digital", str(current_volume)+"%"])
 
 def load_configuration_file():
     global configuration,radios,number_of_radios
@@ -86,9 +80,6 @@ def load_configuration_file():
     number_of_radios = len(radios)
     print (str(len(radios))+" radios have been loaded.")
 
-def configure_lcd():
-    global lcd
-    lcd = serial.Serial('/dev/ttyACM0',9600, timeout=1)
 
 ##############################
 ### CALLBACK FUNCTIONS
@@ -137,33 +128,25 @@ def update_current_radio():
         media = instance.media_new(radios[selected_radio].url)
         player.set_media(media)
         player.play()
+#        media.parse_with_options(vlc.MediaParseFlag.network, 0)
+#        mediaManager = media.event_manager()
+#        mediaManager.event_attach(vlc.EventType.MediaParsedChanged,test_callback,player)
+#        print ("Info : "+str(media.get_meta(vlc.Meta.NowPlaying)))
+
 
 def update_current_volume():
     global volume_display_remaining
     player.audio_set_volume(current_volume)
     call(["amixer", "-M", "-q", "set", "Digital", str(current_volume)+"%"])
-    volume = "Volume "+str(current_volume)
-    print(volume)
-    display_text_on_lcd(volume)
-    volume_display_remaining = volume_display_timer
+    print ("Volume "+str(current_volume))
+    displayManager.display_volume(current_volume)
 
 def display_radio_name():
     if (number_of_radios > 0):
         print(radios[selected_radio].display_name)
-        display_text_on_lcd(radios[selected_radio].display_name)
+        displayManager.update_radio(radios[selected_radio].display_name, radios[selected_radio].display_name)
     else:
-        print (no_radio_display_text)
-        display_text_on_lcd(no_radio_display_text)
-
-def clear_lcd_screen():
-    ## Clear screen
-    lcd.write([0xFE, 0x58])
-    time.sleep(0.01)
-
-def display_text_on_lcd(text):
-    clear_lcd_screen()
-    lcd.write(text.encode())
-    time.sleep(0.01)
+        displayManager.display_halt_message()
 
 ##############################
 ### MAIN FUNCTION
@@ -174,12 +157,12 @@ def clean_exit():
     print("Cleaning GPIO")
     GPIO.cleanup()
     print("Cleaning LCD")
-    clear_lcd_screen()
+    displayManager.close()
     print("Exiting.")
     sys.exit(0)
 
 def main():
-    global volume_display_remaining
+    global displayManager
     print("Radiobot (v0.1)")
     print("Written by Sylvain Benech")
     print("(sylvain.benech@gmail.com)")
@@ -188,7 +171,7 @@ def main():
     # Start modules
     load_configuration_file()
     configure_GPIO()
-    configure_lcd()
+    displayManager = DisplayManager(serial.Serial('/dev/ttyACM0',9600,timeout=1), "    Radiobot", 2, 0.5, 2)
     configure_vlc_player()
     configure_alsamixer() 
 
@@ -196,12 +179,8 @@ def main():
     update_current_radio()
     try:
         while asked_for_exit != 0:
-            time.sleep(1)
-            if volume_display_remaining>0:
-                volume_display_remaining -= 1
-            elif volume_display_remaining == 0:
-                volume_display_remaining -= 1
-                display_radio_name()
+            displayManager.update_display()
+            time.sleep(0.1)
     except KeyboardInterrupt:
         clean_exit()
 
