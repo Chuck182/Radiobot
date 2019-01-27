@@ -17,6 +17,8 @@ class ConfigLoader():
         self._serial_baud_rate = None
         self._default_volume = None
         self._volume_step = None
+        self._radio_info_check_interval = None
+        self._full_radio_name_pause = None
 
     def parse_config_file(self):
         with open(self._filename) as f:
@@ -40,7 +42,9 @@ class ConfigLoader():
             self._scroll_time_pause = tree['display']['scroll_time_pause']
             self._serial_device = tree['display']['serial_device']
             self._serial_baud_rate = tree['display']['serial_baud_rate']
-           
+            self._radio_info_check_interval = tree['general']['radio_info_check_interval']
+            self._full_radio_name_pause = tree['general']['full_radio_name_pause']
+
             if not isinstance(self._name,str):
                 raise ConfigurationFileException("general.name parameter must be a string")
 
@@ -58,6 +62,14 @@ class ConfigLoader():
     @property
     def default_volume(self):
         return self._default_volume
+    
+    @property
+    def radio_info_check_interval(self):
+        return self._radio_info_check_interval
+    
+    @property
+    def full_radio_name_pause(self):
+        return self._full_radio_name_pause
     
     @property
     def volume_step(self):

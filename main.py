@@ -61,7 +61,7 @@ def init_radiobot():
     playerManager = PlayerManager(configLoader.default_volume)
 
     # Loading the radio manager
-    radioManager = RadioManager(configLoader.radios, configLoader.default_volume, configLoader.volume_step, playerManager, displayManager)
+    radioManager = RadioManager(configLoader.radios, configLoader.default_volume, configLoader.volume_step, configLoader.radio_info_check_interval, configLoader.full_radio_name_pause, playerManager, displayManager)
     
     # Loading GPIO configuration
     configure_GPIO()
@@ -101,9 +101,8 @@ def clean_exit():
     sys.exit(0)
 
 def main():
-    print("Radiobot (v0.1)")
-    print("Written by Sylvain Benech")
-    print("(sylvain.benech@gmail.com)")
+    print("Radiobot (v1.0)")
+    print("Written by Chuck182")
     print()
 
     # Init radiobot 
@@ -113,10 +112,10 @@ def main():
     try:
         while asked_for_exit != 0:
             displayManager.update_display()
+            radioManager.check_radio_info()
             time.sleep(0.1)
     except KeyboardInterrupt:
         clean_exit()
 
 if __name__== "__main__":
     main()
-

@@ -31,10 +31,11 @@ class Radio():
         self._extractor_module_name = name
     
     def get_module(self):
-        if (self._extractor_module == None):
+        if self._extractor_module is None and self._extractor_module_name is not None:
             try:
                 lib = importlib.import_module(self.extractor_module_name)
                 self._extractor_module = lib.RadioMetadataExtractor()
-            except:
+            except Exception as e:
+                print (e)
                 self._extractor_module = None
         return self._extractor_module

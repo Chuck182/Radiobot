@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import time
 import serial
-
+import unidecode
 
 class DisplayManager():
     VOLUME_PREFIX = "Volume "
@@ -119,7 +119,7 @@ class DisplayManager():
             self._radio_info_indice = 0
             self._radio_info = None
         elif self._mode == DisplayManager.RADIO and isinstance(message, str):
-            self._radio_info = message.strip()
+            self._radio_info = unidecode.unidecode(message.strip())
             self._radio_info_length = len(self._radio_info)
             self._radio_info_indice = 0
         self.update_radio(self._radio_short_name, self._radio_long_name)
