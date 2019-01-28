@@ -4,6 +4,7 @@ import json
 import serial
 import RPi.GPIO as GPIO
 import time
+import signal
 
 # Internal modules
 from displayManager import DisplayManager
@@ -128,6 +129,13 @@ def clean_exit():
     print("Exiting.")
     sys.exit(0)
 
+def sigterm_callback(signal, frame):
+    """
+        Callback function, called when SIGTERM is triggered
+    """
+    clean_exit()
+
+
 def main(config_file):
     """
         Main method called on program startup. 
@@ -138,6 +146,9 @@ def main(config_file):
     print("Radiobot (v1.0)")
     print("Written by Chuck182")
     print()
+
+    # Setting signal listener (SIGTERM)
+    signal.signal(signal.SIGTERM, sigterm_callback)
 
     # Initializing radiobot 
     init_radiobot(config_file)
