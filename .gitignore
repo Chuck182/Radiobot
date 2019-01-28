@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Custom exclusion
+bin/
+lib/
+lib64
+__pycache__/
+share/
+pip-selfcheck.json
+pyvenv.cfg
