@@ -37,7 +37,21 @@ class DisplayManager():
         """
             Initial configuration of the LCD screen
         """
-        self._lcd.write([0xFE, 0x52]) #Disable autoscroll
+        self._lcd.write([0xFE, 0x52]) # Disable autoscroll
+        time.sleep(0.01)
+        self._lcd.write([0xFE, 0xD0, 0, 180, 130]) # Set backlight color
+        time.sleep(0.01)
+        self._lcd.write([0xFE, 0x99, 250]) # Set brightness
+        time.sleep(0.01)
+        self._lcd.write([0xFE, 0x50, 180]) # Set contrast
+        time.sleep(0.01)
+        self._lcd.write([0xFE, 0x58])
+        time.sleep(0.01)
+        self._lcd.write([0xFE, 0x40]) # Set startup message
+        msg = "    Radiobot                    "
+        self._lcd.write(msg.encode()) # Set startup message
+        time.sleep(0.01)
+
     
     def close(self):
         """
