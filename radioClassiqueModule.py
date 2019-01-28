@@ -9,16 +9,16 @@ class RadioMetadataExtractor(AbstractRadioMetadataExtractor):
         self._interpreter = None
         self._title = None
 
-    def getArtist(self):
+    def get_artist(self):
         return self._artist
 
-    def getInterpreter(self):
+    def get_interpreter(self):
         return self._interpreter
 
-    def getTitle(self):
+    def get_title(self):
         return self._title
 
-    def retrieveCurrentMetadata(self):
+    def retrieve_current_metadata(self):
         req = requests.get(self._url)
         tree = etree.XML(req.text) # Let's open the xml file provided by radio classique 
         songFound = False

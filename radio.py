@@ -34,7 +34,7 @@ class Radio():
 
     def get_module(self):
         if self._extractor_module is None and self._extractor_module_name is not None:
-            try:i # Trying to load the python module dinamically from the module name
+            try: # Trying to load the python module dinamically from the module name
                 lib = importlib.import_module(self.extractor_module_name)
                 self._extractor_module = lib.RadioMetadataExtractor()
             except Exception as e: # If cannot load the module, better not to stop the program and just display no info. 

@@ -1,5 +1,5 @@
 # TODO LIST
-- Ajouter docstring
+X Ajouter docstring
 X Code cleaning
 - Vérifier echelonnage volume
 - Sauvegarder le volume et la radio au démarrage
