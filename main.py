@@ -116,6 +116,10 @@ def previous_radio_callback(channel):
 ##############################
 
 def clean_exit():
+    """
+        This function closes the program in a proper way.
+        It stop GPIO and LCD.
+    """
     print()
     print("Cleaning GPIO")
     GPIO.cleanup()
@@ -125,6 +129,12 @@ def clean_exit():
     sys.exit(0)
 
 def main(config_file):
+    """
+        Main method called on program startup. 
+        Takes the config file path (program arguement)
+        This method run the init function and then 
+        loop on refresh methods until program termination.
+    """
     print("Radiobot (v1.0)")
     print("Written by Chuck182")
     print()

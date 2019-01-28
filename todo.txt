@@ -1,8 +1,14 @@
-# CODE CLEANING
-The following files have been cleaned :
-  - main
-  - configLoader
-
 # TODO LIST
 - Ajouter docstring
-- 
+X Code cleaning
+- Vérifier echelonnage volume
+- Sauvegarder le volume et la radio au démarrage
+- Affichage de l'adresse IP via bouton dédié
+- Gestion led et bouton power
+- Forcer la reconfiguration du LCD au démarrage (backlight, message démarrage, etc.)
+- Vérifier la charge CPU moyenne et la température une fois dans la boite
+- Etudier la possibilité de gérer l'affichage dans un autre thread (pas de latence)
+- Ajouter webradio valse
+- Ajouter modules manquants
+- Définir cahier de tests
+ 

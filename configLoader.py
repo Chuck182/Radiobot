@@ -4,9 +4,18 @@ import json
 import numbers
 
 class ConfigurationFileException(Exception):
+    """
+        This exception class is raised from a ConfigLoader object when
+        one setting does not follow the prerequisites for this setting.  
+    """
     pass
 
 class ConfigLoader():
+    """
+        This class is in charge of parsing the json configuration file, 
+        checking all the parameters. It provides some getters to access
+        parameters if all the parameters are following the requirements. 
+    """
     def __init__(self, filename):
         self._filename = filename
         self._radios = []
@@ -22,6 +31,10 @@ class ConfigLoader():
         self._full_radio_name_pause = None
 
     def parse_config_file(self):
+        """
+            This method parses the configuration file and 
+            check that all parameters follow the prerequisites. 
+        """
         with open(self._filename) as f: # Opening configuration file
             tree = json.load(f) # Parsing json content
             
@@ -140,44 +153,78 @@ class ConfigLoader():
     # Getters for all parameters
     @property
     def radios(self):
+        """
+            Getter for the list of radios
+        """
         return self._radios
 
     @property
     def name(self):
+        """
+            Getter for the name property of the program. 
+            This name is also displayed when no radios are launched.
+        """
         return self._name
 
     @property
     def default_volume(self):
+        """
+            Getter for the default_volume parameter
+        """
         return self._default_volume
     
     @property
     def radio_info_check_interval(self):
+        """
+            Getter for the radio_info_check_interval parameter
+        """
         return self._radio_info_check_interval
     
     @property
     def full_radio_name_pause(self):
+        """
+            Getter for the full_radio_name_pause parameter
+        """
         return self._full_radio_name_pause
     
     @property
     def volume_step(self):
+        """
+            Getter for the volume_step parameter
+        """
         return self._volume_step
     
     @property
     def volume_timer(self):
+        """
+            Getter for the volume_timer parameter
+        """
         return self._volume_timer
 
     @property
     def scroll_time_interval(self):
+        """
+            Getter for the scroll_time_interval parameter
+        """
         return self._scroll_time_interval
 
     @property
     def scroll_time_pause(self):
+        """
+            Getter for the scroll_time_pause parameter
+        """
         return self._scroll_time_pause
 
     @property
     def serial_device(self):
+        """
+            Getter for the serial_device parameter
+        """
         return self._serial_device
 
     @property
     def serial_baud_rate(self):
+        """
+            Getter for the serial_baud_rate parameter
+        """
         return self._serial_baud_rate
