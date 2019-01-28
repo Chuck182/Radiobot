@@ -1,6 +1,6 @@
 {
     "general": {
-        "name": "    Radiobot",
+        "name": "    Radiobot                    ",
         "default_volume": 50,
         "volume_step": 5,
         "radio_info_check_interval": 30,

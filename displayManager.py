@@ -45,11 +45,10 @@ class DisplayManager():
         time.sleep(0.01)
         self._lcd.write([0xFE, 0x50, 180]) # Set contrast
         time.sleep(0.01)
-        self._lcd.write([0xFE, 0x58])
+        self._lcd.write([0xFE, 0x58]) # Cleaning LCD screen
         time.sleep(0.01)
         self._lcd.write([0xFE, 0x40]) # Set startup message
-        msg = "    Radiobot                    "
-        self._lcd.write(msg.encode()) # Set startup message
+        self._lcd.write(self._name.encode()) # Set startup message
         time.sleep(0.01)
 
     
