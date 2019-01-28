@@ -26,10 +26,6 @@ class Radio():
     def extractor_module_name(self):
         return self._extractor_module_name
 
-    @extractor_module_name.setter
-    def extractor_module_name(self, name):
-        self._extractor_module_name = name
-    
     def get_module(self):
         if self._extractor_module is None and self._extractor_module_name is not None:
             try:

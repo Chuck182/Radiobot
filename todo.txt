@@ -1,0 +1,8 @@
+# CODE CLEANING
+The following files have been cleaned :
+  - main
+  - configLoader
+
+# TODO LIST
+- Ajouter docstring
+- 
