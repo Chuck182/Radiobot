@@ -4,7 +4,8 @@
         "default_volume": 50,
         "volume_step": 5,
         "radio_info_check_interval": 30,
-        "full_radio_name_pause": 5
+        "full_radio_name_pause": 5,
+        "save_file_path": "settings.cache"
     },
     "display": {
         "volume_timer": 2,

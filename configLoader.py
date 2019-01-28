@@ -29,6 +29,9 @@ class ConfigLoader():
         self._volume_step = None
         self._radio_info_check_interval = None
         self._full_radio_name_pause = None
+        self._save_file_path = None
+        self._saved_volume = None
+        self._saved_radio = 0
 
     def parse_config_file(self):
         """
@@ -89,6 +92,7 @@ class ConfigLoader():
         self._serial_baud_rate = tree['display']['serial_baud_rate']
         self._radio_info_check_interval = tree['general']['radio_info_check_interval']
         self._full_radio_name_pause = tree['general']['full_radio_name_pause']
+        self._save_file_path = tree['general']['save_file_path']
 
         # Check var type
         if not isinstance(self._name, str):
@@ -121,6 +125,9 @@ class ConfigLoader():
         if not isinstance(self._full_radio_name_pause, numbers.Number):
             raise ConfigurationFileException("general.full_radio_name_pause parameter must be a number")
         
+        if not isinstance(self._save_file_path, str):
+            raise ConfigurationFileException("general.save_file_path parameter must be a string")
+        
         # Check var value and size
         if len(self._name) > 32:
             raise ConfigurationFileException("general.name must not exceed 32 characters")
@@ -149,6 +156,41 @@ class ConfigLoader():
         if self._full_radio_name_pause < 0:
             raise ConfigurationFileException("general.full_radio_name_pause must be a positive value (in seconds)")
 
+        # Now, let's try to load cached settings if exist
+        self.load_cached_settings(self._save_file_path)
+
+    def save_settings(self, volume, radio):
+        """
+            This method is called during program exit. 
+            It saves volume level and radio selection to a cache file. 
+            This allows restoring the program as it was before exit. 
+        """
+        try:
+            f = open(self._save_file_path, "w+")
+            f.write(str(volume)+'\n') # First line is volume
+            f.write(str(radio)+'\n') # Second line is radio indice
+            f.close()
+        except:
+            pass # To not crash the program if cannot save settings
+
+    def load_cached_settings(self, file_path):
+        """
+            This method load the eventually previous cached settings.
+            If exists, it loads volume level and radio indice from cached file.
+        """
+        try:
+            f = open(file_path, "r")
+            fl = f.readlines()
+            if len(fl) >= 2:
+                volume = int(fl[0])
+                radio = int(fl[1])
+                if volume >= 0 and volume <= 100:
+                    self._saved_volume = volume
+                if radio >= 0 and radio < len(self._radios):
+                    self._saved_radio = radio
+        except:
+            self._saved_volume = None
+            self._saved_radio = 0
 
     # Getters for all parameters
     @property
@@ -167,11 +209,15 @@ class ConfigLoader():
         return self._name
 
     @property
-    def default_volume(self):
+    def volume(self):
         """
-            Getter for the default_volume parameter
+            Getter for the volume parameter
+            Returns default_volume or saved_volume if it exists
         """
-        return self._default_volume
+        volume = self._default_volume
+        if self._saved_volume is not None:
+            volume = self._saved_volume
+        return volume
     
     @property
     def radio_info_check_interval(self):
@@ -228,3 +274,10 @@ class ConfigLoader():
             Getter for the serial_baud_rate parameter
         """
         return self._serial_baud_rate
+    
+    @property
+    def radio_indice(self):
+        """
+            Returns the radio indice of the first radio to launch (0 or saved settings value)
+        """
+        return self._saved_radio

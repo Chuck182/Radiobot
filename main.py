@@ -72,10 +72,10 @@ def init_radiobot(config_file):
     displayManager = DisplayManager(serial.Serial(configLoader.serial_device,configLoader.serial_baud_rate,timeout=1), configLoader.name, configLoader.volume_timer, configLoader.scroll_time_interval, configLoader.scroll_time_pause)
 
     # Loading player
-    playerManager = PlayerManager(configLoader.default_volume)
+    playerManager = PlayerManager(configLoader.volume)
 
     # Loading the radio manager
-    radioManager = RadioManager(configLoader.radios, configLoader.default_volume, configLoader.volume_step, configLoader.radio_info_check_interval, configLoader.full_radio_name_pause, playerManager, displayManager)
+    radioManager = RadioManager(configLoader.radios, configLoader.volume, configLoader.volume_step, configLoader.radio_info_check_interval, configLoader.full_radio_name_pause, configLoader.radio_indice, playerManager, displayManager)
     
     # Loading GPIO configuration
     configure_GPIO()
@@ -119,13 +119,16 @@ def previous_radio_callback(channel):
 def clean_exit():
     """
         This function closes the program in a proper way.
-        It stop GPIO and LCD.
+        It stop GPIO and LCD and saves volume and radio settings.
     """
     print()
     print("Cleaning GPIO")
     GPIO.cleanup()
     print("Cleaning LCD")
     displayManager.close()
+    # Saving settings
+    print("Saving current settings to cache")
+    configLoader.save_settings(radioManager.get_current_volume(), radioManager.get_current_radio_indice())
     print("Exiting.")
     sys.exit(0)
 

@@ -9,9 +9,9 @@ class RadioManager():
        update the player and the display. 
 
     """
-    def __init__(self, radio_list, volume, volume_step, radio_info_check_interval, full_radio_name_pause, player, display):
+    def __init__(self, radio_list, volume, volume_step, radio_info_check_interval, full_radio_name_pause, radio_indice, player, display):
         self._radios = radio_list
-        self._indice = 0
+        self._indice = radio_indice
         self._volume = volume
         self._volume_step = volume_step
         self._player = player
@@ -124,6 +124,17 @@ class RadioManager():
             else:
                 self._display.update_radio_info(None) # If no info available at this time, notify the display to cleanup the info currently displayed.
 
+    def get_current_volume(self):
+        """
+            Returns the current volume level (int)
+        """
+        return self._volume
+
+    def get_current_radio_indice(self):
+        """
+            Returns the current radio indice
+        """
+        return self._indice
 
     # Private getters
    
