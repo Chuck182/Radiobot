@@ -2,8 +2,8 @@
 X Ajouter docstring
 X Code cleaning
 - Vérifier echelonnage volume
-- Sauvegarder le volume et la radio au démarrage
-- Affichage de l'adresse IP via bouton dédié
+X Sauvegarder le volume et la radio au démarrage
+X Affichage de l'adresse IP ==> Appuyer sur vol down PUIS vol up dans un laps de temps inférieur à 400ms
 - Gestion led et bouton power
 - Forcer la reconfiguration du LCD au démarrage (backlight, message démarrage, etc.)
 - Vérifier la charge CPU moyenne et la température une fois dans la boite

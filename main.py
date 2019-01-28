@@ -5,6 +5,8 @@ import serial
 import RPi.GPIO as GPIO
 import time
 import signal
+from netifaces import AF_INET, AF_INET6, AF_LINK, AF_PACKET, AF_BRIDGE
+import netifaces as ni
 
 # Internal modules
 from displayManager import DisplayManager
@@ -23,6 +25,7 @@ displayManager = None
 configLoader = None
 radioManager = None
 playerManager = None
+ip_timer = 0
 
 ##############################
 ### STARTUP FUNCTIONS
@@ -90,13 +93,24 @@ def init_radiobot(config_file):
 def volume_up_callback(channel):
     """"
         Callback function, called when the volume UP button is pressed
+        If a user press down then up immediatly, it display ip address
     """
-    radioManager.volume_up()
+    if time.time()-ip_timer < 0.4:
+        try:
+            ip = ni.ifaddresses('wlan0')[AF_INET][0]['addr']
+            print ("IP address : "+str(ip))
+            displayManager.display_ip_address(str(ip))
+        except:
+            pass # Do not generate error for this
+    else:
+        radioManager.volume_up()
 
 def volume_down_callback(channel):
+    global ip_timer
     """"
         Callback function, called when the volume DOWN button is pressed
     """
+    ip_timer = time.time()
     radioManager.volume_down()
 
 def next_radio_callback(channel):
@@ -110,7 +124,6 @@ def previous_radio_callback(channel):
         Callback function, called when the radio PREVIOUS button is pressed
     """
     radioManager.previous()
-
 
 ##############################
 ### MAIN FUNCTION

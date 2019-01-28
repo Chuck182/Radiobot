@@ -25,9 +25,11 @@ class DisplayManager():
         self._radio_info_length = 0
         self._radio_info_indice = 0
         self._volume_start_time = None
+        self._ip_start_time = None
         self._scroll_start_time = None
         self._mode = DisplayManager.HALT
         self._volume_displayed = False
+        self._ip_displayed = False
         self.configure_lcd()
         self.display_halt_message()
 
@@ -98,6 +100,7 @@ class DisplayManager():
             volume info at the end of the timer and set the radio name instead.
         """
         if isinstance(vol, int) and vol >= 0 and vol <= 100:
+            self._volume_start_time = time.time()
             volume_text = str(vol)
             if vol == 0:
                 volume_text = "MIN"
@@ -105,7 +108,6 @@ class DisplayManager():
                 volume_text = "MAX"
             self.set_full_text(DisplayManager.VOLUME_PREFIX+volume_text)
             self._volume_displayed = True
-            self._volume_start_time = time.time()
 
     def update_display(self):
         """
@@ -115,7 +117,16 @@ class DisplayManager():
               - If radio is displayed and radio_info available,
                 manage the scrolling of the info (one step at each call)
         """
-        if self._volume_displayed: # If the volume is currently displayed
+        if self._ip_displayed: # If the IP is currently displayed
+            now = time.time()
+            if (now - self._ip_start_time) >= self._volume_timer: # and if the timer is reached (we have to clean the display and restore the previous content)
+                self._ip_displayed = False
+                if self._mode == DisplayManager.HALT: # If the previous content was the HALT message, let's restore it
+                    self.display_halt_message()
+                elif self._mode == DisplayManager.RADIO: # If it was the radio content (name + optionnaly info), restore it
+                    self._radio_info_indice = 0
+                    self.update_radio(self._radio_short_name, self._radio_long_name)
+        elif self._volume_displayed: # If the volume is currently displayed
             now = time.time()
             if (now - self._volume_start_time) >= self._volume_timer: # and if the timer is reached (we have to clean the display and restore the previous content)
                 self._volume_displayed = False
@@ -174,3 +185,16 @@ class DisplayManager():
             self._radio_info_length = len(self._radio_info)
             self._radio_info_indice = 0
         self.update_radio(self._radio_short_name, self._radio_long_name) # Finally calls the update_radio method to really update the display (this current method only updates the text var)
+    
+    def display_ip_address(self, ip_address):
+        """
+            This method displays the IP address of the RPI
+            on the screen, and initialize the ip_address_timer. 
+            The update_display method will clear the 
+            ip_address at the end of the timer and set the radio name instead.
+        """
+        if isinstance(ip_address, str) and len(ip_address) <= 16:
+            text = "Adresse IP      "+ip_address
+            self.set_full_text(text)
+            self._ip_displayed = True
+            self._ip_start_time = time.time()
