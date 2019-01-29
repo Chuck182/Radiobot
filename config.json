@@ -38,6 +38,11 @@
             "short_name": "Fr musique Plus",
             "stream_url": "http://chai5she.lb.vip.cdn.dvmr.fr/francemusiqueclassiqueplus-hifi.mp3",
             "module_name": "franceMusiquePlusModule"
+        },
+                {
+            "long_name": "ICI Musique\rClassique",
+            "short_name": "ICI Musique",
+            "stream_url": "http://edge29207.icecast-eu.akadns.net/7/481/177425/v1/rc.akacast.akamaistream.net/SP01RADIO"
         }
     ]
 }
