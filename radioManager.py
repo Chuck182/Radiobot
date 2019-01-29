@@ -57,8 +57,6 @@ class RadioManager():
         self._player.change_radio(self.__get_stream_url())
         self._display.on_thread(self._display.update_radio_info, None)
         self._display.on_thread(self._display.update_radio, self.__get_short_name(), self.__get_long_name())
-#        self._display.update_radio_info(None)
-#        self._display.update_radio(self.__get_short_name(), self.__get_long_name())
         self._last_check = time.time()-self._radio_info_check_interval+self._full_radio_name_pause # To display the full radio name for few seconds
 
     def volume_up(self): 
@@ -71,7 +69,6 @@ class RadioManager():
             self._volume += self._volume_step
         self._player.change_volume(self._volume)
         self._display.on_thread(self._display.display_volume, self._volume)
-#        self._display.display_volume(self._volume)
 
     def volume_down(self): 
         """
@@ -83,7 +80,6 @@ class RadioManager():
             self._volume -= self._volume_step
         self._player.change_volume(self._volume)
         self._display.on_thread(self._display.display_volume, self._volume)
-#        self._display.display_volume(self._volume)
 
     def check_radio_info(self):
         """
@@ -112,7 +108,7 @@ class RadioManager():
                         interpreter = ""
         
                     infos = artist
-                    if len(artist) > 0 and len(title) > 0 and len(interpreter) > 0:
+                    if len(artist) > 0 and (len(title) > 0 or len(interpreter) > 0):
                         infos += " - "
         
                     infos += title
@@ -124,11 +120,9 @@ class RadioManager():
                 if infos != self._previous_info: # And if this info is different from the current one (currently displayed)
                     print ("New info available : "+infos)
                     self._display.on_thread(self._display.update_radio_info, infos)
-#                    self._display.update_radio_info(infos) # Notify the display for this new available information
                     self._previous_info = infos # Save this info as the current info for next check
             else:
                 self._display.on_thread(self._display.update_radio_info, None)
-#                self._display.update_radio_info(None) # If no info available at this time, notify the display to cleanup the info currently displayed.
 
     def get_current_volume(self):
         """

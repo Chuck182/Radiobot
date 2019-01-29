@@ -24,7 +24,8 @@
         {
             "long_name": "Radio Swiss\rClassic",
             "short_name": "Swiss Classic",
-            "stream_url": "http://stream.srg-ssr.ch/m/rsc_fr/mp3_128"
+            "stream_url": "http://stream.srg-ssr.ch/m/rsc_fr/mp3_128",
+            "module_name": "radioSwissClassic"
         },
                 {
             "long_name": "France musique\rClassique Easy",
