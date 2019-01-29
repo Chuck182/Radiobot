@@ -55,8 +55,10 @@ class RadioManager():
             display to display the name of this selected radio.
         """
         self._player.change_radio(self.__get_stream_url())
-        self._display.update_radio_info(None)
-        self._display.update_radio(self.__get_short_name(), self.__get_long_name())
+        self._display.on_thread(self._display.update_radio_info, None)
+        self._display.on_thread(self._display.update_radio, self.__get_short_name(), self.__get_long_name())
+#        self._display.update_radio_info(None)
+#        self._display.update_radio(self.__get_short_name(), self.__get_long_name())
         self._last_check = time.time()-self._radio_info_check_interval+self._full_radio_name_pause # To display the full radio name for few seconds
 
     def volume_up(self): 
@@ -68,7 +70,8 @@ class RadioManager():
         if self._volume <= (100-self._volume_step):
             self._volume += self._volume_step
         self._player.change_volume(self._volume)
-        self._display.display_volume(self._volume)
+        self._display.on_thread(self._display.display_volume, self._volume)
+#        self._display.display_volume(self._volume)
 
     def volume_down(self): 
         """
@@ -79,7 +82,8 @@ class RadioManager():
         if self._volume >= (0+self._volume_step):
             self._volume -= self._volume_step
         self._player.change_volume(self._volume)
-        self._display.display_volume(self._volume)
+        self._display.on_thread(self._display.display_volume, self._volume)
+#        self._display.display_volume(self._volume)
 
     def check_radio_info(self):
         """
@@ -93,7 +97,7 @@ class RadioManager():
             infos = ""
             module = self._radios[self._indice].get_module() # Get the module related to this radio
             if module is not None: # If a module is available
-                if self._radios[self._indice].get_module().retrieve_current_metadata(): # If metadata are available at this time
+                if module.retrieve_current_metadata(): # If metadata are available at this time
                     artist = module.get_artist()
                     title = module.get_title()
                     interpreter = module.get_interpreter()
@@ -119,10 +123,12 @@ class RadioManager():
             if len(infos) > 0: # If some infos have been collected
                 if infos != self._previous_info: # And if this info is different from the current one (currently displayed)
                     print ("New info available : "+infos)
-                    self._display.update_radio_info(infos) # Notify the display for this new available information
+                    self._display.on_thread(self._display.update_radio_info, infos)
+#                    self._display.update_radio_info(infos) # Notify the display for this new available information
                     self._previous_info = infos # Save this info as the current info for next check
             else:
-                self._display.update_radio_info(None) # If no info available at this time, notify the display to cleanup the info currently displayed.
+                self._display.on_thread(self._display.update_radio_info, None)
+#                self._display.update_radio_info(None) # If no info available at this time, notify the display to cleanup the info currently displayed.
 
     def get_current_volume(self):
         """

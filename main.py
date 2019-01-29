@@ -73,6 +73,7 @@ def init_radiobot(config_file):
 
     # Loading display manager
     displayManager = DisplayManager(serial.Serial(configLoader.serial_device,configLoader.serial_baud_rate,timeout=1), configLoader.name, configLoader.volume_timer, configLoader.scroll_time_interval, configLoader.scroll_time_pause)
+    displayManager.start()
 
     # Loading player
     playerManager = PlayerManager(configLoader.volume)
@@ -99,7 +100,7 @@ def volume_up_callback(channel):
         try:
             ip = ni.ifaddresses('wlan0')[AF_INET][0]['addr']
             print ("IP address : "+str(ip))
-            displayManager.display_ip_address(str(ip))
+            displayManager.on_thread(displayManager.display_ip_address, str(ip))
         except:
             pass # Do not generate error for this
     else:
@@ -138,7 +139,7 @@ def clean_exit():
     print("Cleaning GPIO")
     GPIO.cleanup()
     print("Cleaning LCD")
-    displayManager.close()
+    displayManager.on_thread(displayManager.terminate)
     # Saving settings
     print("Saving current settings to cache")
     configLoader.save_settings(radioManager.get_current_volume(), radioManager.get_current_radio_indice())
@@ -172,7 +173,6 @@ def main(config_file):
     # While there are no process interruptions, loop on display update functions 
     try:
         while True:
-            displayManager.update_display() # To update display (i.e. scroll radio info or end of volume level display)
             radioManager.check_radio_info() # Check if new radio info is available, and notify display if needed
             time.sleep(0.05)
     except KeyboardInterrupt:
