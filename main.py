@@ -7,6 +7,7 @@ import time
 import signal
 from netifaces import AF_INET, AF_INET6, AF_LINK, AF_PACKET, AF_BRIDGE
 import netifaces as ni
+import subprocess
 
 # Internal modules
 from displayManager import DisplayManager
@@ -48,6 +49,14 @@ def configure_GPIO():
     GPIO.add_event_detect(24, GPIO.FALLING, callback=next_radio_callback, bouncetime=200)
     GPIO.add_event_detect(25, GPIO.FALLING, callback=previous_radio_callback, bouncetime=200)
 
+def set_as_ready():
+    GPIO.setup(4, GPIO.OUT)
+    GPIO.output(4, GPIO.LOW)
+    time.sleep(0.5)
+    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(4, GPIO.FALLING, callback=halt_callback, bouncetime=200)
+
+
 # Global initialisation method
 def init_radiobot(config_file):
     """
@@ -62,6 +71,10 @@ def init_radiobot(config_file):
           selection and communication between the display and the player. 
     """
     global displayManager,configLoader,radioManager,playerManager
+    
+    # Loading GPIO configuration
+    configure_GPIO()
+
     try: # Trying to load configuration file
         configLoader = ConfigLoader(config_file)
         configLoader.parse_config_file()
@@ -81,11 +94,12 @@ def init_radiobot(config_file):
     # Loading the radio manager
     radioManager = RadioManager(configLoader.radios, configLoader.volume, configLoader.volume_step, configLoader.radio_info_check_interval, configLoader.full_radio_name_pause, configLoader.radio_indice, playerManager, displayManager)
     
-    # Loading GPIO configuration
-    configure_GPIO()
-
+    # Declare radiobot "ready"
+    set_as_ready()
+    
     # Starting first radio
     radioManager.play_radio()
+
 
 ##############################
 ### CALLBACK FUNCTIONS
@@ -126,9 +140,34 @@ def previous_radio_callback(channel):
     """
     radioManager.previous()
 
+def halt_callback(channel):
+    """"
+        Callback function, called when the halt button is pressed
+    """
+    print ("Shutdown requested !")
+    clean_exit_and_shutdown()
+
+
 ##############################
 ### MAIN FUNCTION
 ##############################
+
+def clean_exit_and_shutdown():
+    """
+        This function closes the program in a proper way and shutdown the rpi.
+        It stop GPIO and LCD and saves volume and radio settings.
+    """
+    print()
+    print("Cleaning GPIO")
+    GPIO.cleanup()
+    print("Cleaning LCD")
+    displayManager.on_thread(displayManager.terminate)
+    # Saving settings
+    print("Saving current settings to cache")
+    configLoader.save_settings(radioManager.get_current_volume(), radioManager.get_current_radio_indice())
+    print("Exiting.")
+    subprocess.call(['sudo', 'shutdown', '-h', 'now'], shell=False)
+    sys.exit(0)
 
 def clean_exit():
     """
@@ -150,7 +189,8 @@ def sigterm_callback(signal, frame):
     """
         Callback function, called when SIGTERM is triggered
     """
-    clean_exit()
+    if not shutdown_requested:
+        clean_exit()
 
 
 def main(config_file):
