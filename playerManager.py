@@ -23,7 +23,7 @@ class PlayerManager():
         """
             Creates a vlc instance, ready to listen for an audio stream.
         """
-        self._instance = vlc.Instance("--no-video --aout=alsa --no-metadata-network-access --loop --random")
+        self._instance = vlc.Instance("--no-video --aout=alsa --no-metadata-network-access")
         self._player = self._instance.media_player_new()
         self._player.audio_set_volume(self._volume)
         self._list_player = self._instance.media_list_player_new()
