@@ -14,10 +14,11 @@ class DisplayManager(threading.Thread):
     HALT = 1
     RADIO = 2
 
-    def __init__(self, lcd, name, vol_timer, scroll_interval, scroll_pause):
+    def __init__(self, lcd, name, halt_message, vol_timer, scroll_interval, scroll_pause):
         self._q = queue.Queue()
         self._lcd = lcd
         self._prog_name = name
+        self._halt_message = halt_message
         self._volume_timer = vol_timer
         self._scroll_interval = scroll_interval
         self._scroll_pause = scroll_pause
@@ -41,7 +42,7 @@ class DisplayManager(threading.Thread):
 
     def run(self):
         self.__configure_lcd()
-        self.__display_halt_message()
+        self.__display_welcome_message()
         while not self._thread_exit_flag:
             try:
                 function, args, kwargs = self._q.get(False)
@@ -154,6 +155,13 @@ class DisplayManager(threading.Thread):
     
     def __display_halt_message(self):
         """
+            When exiting, display a halt message. 
+        """
+        self._mode = DisplayManager.HALT
+        self.__set_full_text(self._halt_message)
+
+    def __display_welcome_message(self):
+        """
             When no radios are playing, this method can be called 
             to display the name of the program instead.
         """
@@ -211,7 +219,7 @@ class DisplayManager(threading.Thread):
             if (now - self._ip_start_time) >= self._volume_timer: # and if the timer is reached (we have to clean the display and restore the previous content)
                 self._ip_displayed = False
                 if self._mode == DisplayManager.HALT: # If the previous content was the HALT message, let's restore it
-                    self.__display_halt_message()
+                    self.__display_welcome_message()
                 elif self._mode == DisplayManager.RADIO: # If it was the radio content (name + optionnaly info), restore it
                     self._radio_info_indice = 0
                     self.update_radio(self._radio_short_name, self._radio_long_name)
@@ -220,7 +228,7 @@ class DisplayManager(threading.Thread):
             if (now - self._volume_start_time) >= self._volume_timer: # and if the timer is reached (we have to clean the display and restore the previous content)
                 self._volume_displayed = False
                 if self._mode == DisplayManager.HALT: # If the previous content was the HALT message, let's restore it
-                    self.__display_halt_message()
+                    self.__display_welcome_message()
                 elif self._mode == DisplayManager.RADIO: # If it was the radio content (name + optionnaly info), restore it
                     self._radio_info_indice = 0
                     self.update_radio(self._radio_short_name, self._radio_long_name)

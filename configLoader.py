@@ -20,6 +20,7 @@ class ConfigLoader():
         self._filename = filename
         self._radios = []
         self._name = None
+        self._halt_message = None
         self._volume_timer = None
         self._scroll_time_interval = None
         self._scroll_time_pause = None
@@ -50,6 +51,7 @@ class ConfigLoader():
             long_name = radio['long_name'] 
             short_name = radio['short_name'] 
             stream_url = radio['stream_url'] 
+            media_type = radio['type'] 
             module_name = None
             if 'module_name' in radio:
                 module_name = radio['module_name']
@@ -64,18 +66,24 @@ class ConfigLoader():
             if not isinstance(stream_url, str):
                 raise ConfigurationFileException("radios.radio.stream_url must be a string")
             
+            if not isinstance(media_type, str):
+                raise ConfigurationFileException("radios.radio.type must be a string")
+            
             if module_name is not None and not isinstance(module_name, str):
                 raise ConfigurationFileException("radios.radio.module_name must be a string")
 
             # Check attribute value and size
             if len(long_name) > 32:
-                   raise ConfigurationFileException("radios.radio.long_name must not exceed 32 characters")
+                raise ConfigurationFileException("radios.radio.long_name must not exceed 32 characters")
             
             if len(short_name) > 16:
-                   raise ConfigurationFileException("radios.radio.short_name must not exceed 16 characters")
-            
+                raise ConfigurationFileException("radios.radio.short_name must not exceed 16 characters")
+           
+            if media_type != "stream" and media_type != "folder":
+                raise ConfigurationFileException("radios.radio.type must be either 'stream' or 'folder'")
+
             # Register new radio
-            r = Radio(long_name, short_name, stream_url, module_name)
+            r = Radio(long_name, short_name, stream_url, media_type, module_name)
             self._radios.append(r)
 
         if len(self._radios) <= 0:
@@ -83,6 +91,7 @@ class ConfigLoader():
 
         # Then, load other mandatory properties
         self._name = tree['general']['name']
+        self._halt_message = tree['general']['halt_message']
         self._default_volume = tree['general']['default_volume']
         self._volume_step = tree['general']['volume_step']
         self._volume_timer = tree['display']['volume_timer']
@@ -97,6 +106,9 @@ class ConfigLoader():
         # Check var type
         if not isinstance(self._name, str):
             raise ConfigurationFileException("general.name parameter must be a string")
+
+        if not isinstance(self._halt_message, str):
+            raise ConfigurationFileException("general.halt_message parameter must be a string")
 
         if not isinstance(self._default_volume, numbers.Number):
             raise ConfigurationFileException("general.default_volume parameter must be a number")
@@ -131,6 +143,9 @@ class ConfigLoader():
         # Check var value and size
         if len(self._name) > 32:
             raise ConfigurationFileException("general.name must not exceed 32 characters")
+        
+        if len(self._halt_message) > 32:
+            raise ConfigurationFileException("general.halt_message must not exceed 32 characters")
         
         if self._default_volume > 100 or self._default_volume < 0:
             raise ConfigurationFileException("general.default_volume must be between 0 and 100")
@@ -207,6 +222,14 @@ class ConfigLoader():
             This name is also displayed when no radios are launched.
         """
         return self._name
+
+    @property
+    def halt_message(self):
+        """
+            Getter for the halt_message property of the program. 
+            This message is displayed during exit.
+        """
+        return self._halt_message
 
     @property
     def volume(self):

@@ -85,7 +85,7 @@ def init_radiobot(config_file):
         sys.exit(2)
 
     # Loading display manager
-    displayManager = DisplayManager(serial.Serial(configLoader.serial_device,configLoader.serial_baud_rate,timeout=1), configLoader.name, configLoader.volume_timer, configLoader.scroll_time_interval, configLoader.scroll_time_pause)
+    displayManager = DisplayManager(serial.Serial(configLoader.serial_device,configLoader.serial_baud_rate,timeout=1), configLoader.name, configLoader.halt_message, configLoader.volume_timer, configLoader.scroll_time_interval, configLoader.scroll_time_pause)
     displayManager.start()
 
     # Loading player
@@ -189,8 +189,7 @@ def sigterm_callback(signal, frame):
     """
         Callback function, called when SIGTERM is triggered
     """
-    if not shutdown_requested:
-        clean_exit()
+    clean_exit()
 
 
 def main(config_file):

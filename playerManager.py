@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import vlc
 from subprocess import call
+import glob
+import random
 
 class PlayerManager():
     """
@@ -11,6 +13,9 @@ class PlayerManager():
         self._volume = volume
         self._player = None
         self._instance = None
+        self._media = None
+        self._media_list = None
+        self._list_player = None
         self.init_vlc()
         self.init_alsa()
 
@@ -18,9 +23,12 @@ class PlayerManager():
         """
             Creates a vlc instance, ready to listen for an audio stream.
         """
-        self._instance = vlc.Instance("--no-video --aout=alsa --metadata-network-access")
+        self._instance = vlc.Instance("--no-video --aout=alsa --no-metadata-network-access --loop --random")
         self._player = self._instance.media_player_new()
         self._player.audio_set_volume(self._volume)
+        self._list_player = self._instance.media_list_player_new()
+        self._list_player.set_media_player(self._player)
+        self._list_player.set_playback_mode(vlc.PlaybackMode.loop)
 
     def init_alsa(self):
         """
@@ -30,20 +38,29 @@ class PlayerManager():
         """
         call(["amixer", "-M", "-q", "set", "Digital", str(self._volume)+"%"])
 
-    def change_radio(self, url):
+    def change_radio(self, url, media_type):
         """
             Takes a stream URL in input and asks the vlc instance to 
             listen for this stream and play its content. 
             Run the init_vlc method if no vlc instance available. 
         """
-        if self._player is None:
+        if self._player is None or self._list_player is None:
             self.init_vlc()
         else:    
             self._player.stop()
-        media = self._instance.media_new(url)
-        self._player.set_media(media)
-        self._player.play()
-    
+            self._list_player.stop()
+
+        if media_type == "stream":
+            self._media = self._instance.media_new(url)
+            self._player.set_media(self._media)
+            self._player.play()
+        elif media_type == "folder":
+            files = glob.glob(url)        
+            random.shuffle(files)
+            media_list = vlc.MediaList(files)
+            self._list_player.set_media_list(media_list)
+            self._list_player.play()
+
     def change_volume(self, volume):
         """
             Takes the new volume in parameter and set this volume (percent)
@@ -56,3 +73,15 @@ class PlayerManager():
             self.init_vlc()
         self._player.audio_set_volume(self._volume)
         call(["amixer", "-M", "-q", "set", "Digital", str(self._volume)+"%"])
+
+    def get_infos(self):
+        info = ""
+        try:
+            media = self._player.get_media()
+            title = str(media.get_meta(vlc.Meta.Title))
+            artist = str(media.get_meta(vlc.Meta.Artist))
+            info = artist+" - "+title
+        except Exception as e:
+            print (str(e))
+            info = ""
+        return info

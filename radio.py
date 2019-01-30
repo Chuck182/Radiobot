@@ -9,10 +9,12 @@ class Radio():
           - A stream URL
           - The name of the extractor module (optional)
     """
-    def __init__(self, long_name, short_name, stream_url, extractor_module):
+
+    def __init__(self, long_name, short_name, stream_url, media_type, extractor_module):
         self._long_name = long_name
         self._short_name = short_name
         self._stream_url = stream_url
+        self._media_type = media_type
         self._extractor_module_name = extractor_module
         self._extractor_module = None
 
@@ -29,11 +31,15 @@ class Radio():
         return self._stream_url
 
     @property
+    def media_type(self):
+        return self._media_type
+
+    @property
     def extractor_module_name(self):
         return self._extractor_module_name
 
     def get_module(self):
-        if self._extractor_module is None and self._extractor_module_name is not None:
+        if self._extractor_module is None and self._extractor_module_name is not None and self._extractor_module_name.lower() != "vlc" :
             try: # Trying to load the python module dinamically from the module name
                 lib = importlib.import_module(self.extractor_module_name)
                 self._extractor_module = lib.RadioMetadataExtractor()

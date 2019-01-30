@@ -4,8 +4,10 @@ X Code cleaning
 - Vérifier echelonnage volume
 X Sauvegarder le volume et la radio au démarrage
 X Affichage de l'adresse IP ==> Appuyer sur vol down PUIS vol up dans un laps de temps inférieur à 400ms
-- Gestion led et bouton power
+X Gestion led et bouton power
 X Forcer la reconfiguration du LCD au démarrage (backlight, message démarrage, etc.)
 - Vérifier la charge CPU moyenne et la température une fois dans la boite
 X Etudier la possibilité de gérer l'affichage dans un autre thread (pas de latence)
-- Ajouter module ICI musique
+X Ajouter une playlist locale avec de la valse, avec boucle et random
+X Récupérer les infos de la playlist locale
+X Ecrire a bientôt lors de l'arrêt

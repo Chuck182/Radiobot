@@ -54,7 +54,7 @@ class RadioManager():
             Asks the player to play the selected radio and the 
             display to display the name of this selected radio.
         """
-        self._player.change_radio(self.__get_stream_url())
+        self._player.change_radio(self.__get_stream_url(), self.__get_media_type())
         self._display.on_thread(self._display.update_radio_info, None)
         self._display.on_thread(self._display.update_radio, self.__get_short_name(), self.__get_long_name())
         self._last_check = time.time()-self._radio_info_check_interval+self._full_radio_name_pause # To display the full radio name for few seconds
@@ -91,31 +91,34 @@ class RadioManager():
         if time.time() - self._last_check > self._radio_info_check_interval: # Run only if it is time to check (defined by the radio_info_check_interval param)
             self._last_check = time.time()
             infos = ""
-            module = self._radios[self._indice].get_module() # Get the module related to this radio
-            if module is not None: # If a module is available
-                if module.retrieve_current_metadata(): # If metadata are available at this time
-                    artist = module.get_artist()
-                    title = module.get_title()
-                    interpreter = module.get_interpreter()
-        
-                    if not isinstance(artist, str):
-                        artist = ""
-        
-                    if not isinstance(title, str):
-                        title = ""
-        
-                    if not isinstance(interpreter, str):
-                        interpreter = ""
-        
-                    infos = artist
-                    if len(artist) > 0 and (len(title) > 0 or len(interpreter) > 0):
-                        infos += " - "
-        
-                    infos += title
-                    if len(title) > 0 and len(interpreter) > 0:
-                        infos += " - "
-        
-                    infos += interpreter
+            if self._radios[self._indice].extractor_module_name.lower() == "vlc":
+                infos = self._player.get_infos()
+            else:
+                module = self._radios[self._indice].get_module() # Get the module related to this radio
+                if module is not None: # If a module is available
+                    if module.retrieve_current_metadata(): # If metadata are available at this time
+                        artist = module.get_artist()
+                        title = module.get_title()
+                        interpreter = module.get_interpreter()
+            
+                        if not isinstance(artist, str):
+                            artist = ""
+            
+                        if not isinstance(title, str):
+                            title = ""
+            
+                        if not isinstance(interpreter, str):
+                            interpreter = ""
+            
+                        infos = artist
+                        if len(artist) > 0 and (len(title) > 0 or len(interpreter) > 0):
+                            infos += " - "
+            
+                        infos += title
+                        if len(title) > 0 and len(interpreter) > 0:
+                            infos += " - "
+            
+                        infos += interpreter
             if len(infos) > 0: # If some infos have been collected
                 if infos != self._previous_info: # And if this info is different from the current one (currently displayed)
                     print ("New info available : "+infos)
@@ -146,4 +149,7 @@ class RadioManager():
 
     def __get_stream_url(self):
         return self._radios[self._indice].stream_url
+
+    def __get_media_type(self):
+        return self._radios[self._indice].media_type
 
