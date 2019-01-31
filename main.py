@@ -44,10 +44,10 @@ def configure_GPIO():
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(22, GPIO.FALLING, callback=volume_up_callback, bouncetime=200) # Adding listener on PIN state change, triggered by falling signal  and 200 ms of pause to prevent bouncing effects)
-    GPIO.add_event_detect(23, GPIO.FALLING, callback=volume_down_callback, bouncetime=200)
-    GPIO.add_event_detect(24, GPIO.FALLING, callback=next_radio_callback, bouncetime=200)
-    GPIO.add_event_detect(25, GPIO.FALLING, callback=previous_radio_callback, bouncetime=200)
+    GPIO.add_event_detect(22, GPIO.RISING, callback=volume_up_callback, bouncetime=200) # Adding listener on PIN state change, triggered by falling signal  and 200 ms of pause to prevent bouncing effects)
+    GPIO.add_event_detect(23, GPIO.RISING, callback=volume_down_callback, bouncetime=200)
+    GPIO.add_event_detect(24, GPIO.RISING, callback=next_radio_callback, bouncetime=200)
+    GPIO.add_event_detect(25, GPIO.RISING, callback=previous_radio_callback, bouncetime=200)
 
 def set_as_ready():
     GPIO.setup(4, GPIO.OUT)
@@ -213,6 +213,7 @@ def main(config_file):
     try:
         while True:
             radioManager.check_radio_info() # Check if new radio info is available, and notify display if needed
+            playerManager.update_player()
             time.sleep(0.05)
     except KeyboardInterrupt:
         clean_exit()

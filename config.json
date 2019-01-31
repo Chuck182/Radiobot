@@ -4,8 +4,8 @@
         "halt_message": "  A bientot !                   ",
         "default_volume": 50,
         "volume_step": 5,
-        "radio_info_check_interval": 30,
-        "full_radio_name_pause": 5,
+        "radio_info_check_interval": 20,
+        "full_radio_name_pause": 3,
         "save_file_path": "settings.cache"
     },
     "display": {
@@ -45,8 +45,8 @@
             "module_name": "franceMusiquePlusModule"
         },
                 {
-            "long_name": "Selection de\rValses",
-            "short_name": "Selection Valses",
+            "long_name": "Quelques valses",
+            "short_name": "Quelques valses",
             "stream_url": "/data/selection_valses/*.mp3",
             "type": "folder",
             "module_name": "vlc"
