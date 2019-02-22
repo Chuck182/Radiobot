@@ -25,6 +25,7 @@ class RadioManager():
         self._queue = Queue()
         self._threads = []
         self._lock = threading.Lock()
+        self._pending_changes = False
 
     # Public functions
 
@@ -59,10 +60,13 @@ class RadioManager():
             Asks the player to play the selected radio and the 
             display to display the name of this selected radio.
         """
-        self._display.on_thread(self._display.update_radio_info, None)
-        self._display.on_thread(self._display.update_radio, self.__get_short_name(), self.__get_long_name())
-        self._last_check = time.time()-self._radio_info_check_interval+self._full_radio_name_pause # To display the full radio name for few seconds
-        self._player.change_radio(self.__get_stream_url(), self.__get_media_type())
+        if not self._pending_changes:
+            self._pending_changes = True
+            self._display.on_thread(self._display.update_radio_info, None)
+            self._display.on_thread(self._display.update_radio, self.__get_short_name(), self.__get_long_name())
+            self._last_check = time.time()-self._radio_info_check_interval+self._full_radio_name_pause # To display the full radio name for few seconds
+            self._player.change_radio(self.__get_stream_url(), self.__get_media_type())
+            self._pending_changes = False
 
     def volume_up(self): 
         """

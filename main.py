@@ -40,11 +40,11 @@ def configure_GPIO():
         (volume up/down and radio previous/next)
     """
     GPIO.setmode(GPIO.BCM) # we are using gpio BCM notation
-    GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set this gpio pin as input, with a pull-down resistor
+    GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set this gpio pin as input, with a pull-down resistor
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(22, GPIO.RISING, callback=volume_up_callback, bouncetime=200) # Adding listener on PIN state change, triggered by falling signal  and 200 ms of pause to prevent bouncing effects)
+    GPIO.add_event_detect(27, GPIO.RISING, callback=volume_up_callback, bouncetime=200) # Adding listener on PIN state change, triggered by falling signal  and 200 ms of pause to prevent bouncing effects)
     GPIO.add_event_detect(23, GPIO.RISING, callback=volume_down_callback, bouncetime=200)
     GPIO.add_event_detect(24, GPIO.RISING, callback=next_radio_callback, bouncetime=200)
     GPIO.add_event_detect(25, GPIO.RISING, callback=previous_radio_callback, bouncetime=200)
